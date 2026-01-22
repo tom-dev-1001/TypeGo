@@ -1,555 +1,197 @@
-# TypeGo
+TypeGo
 
-A tool to help improve and give Go some quality of life improvements.
-It converts to Go code, similar to Typescript and Javascript.
+TypeGo is a statically typed transpiler and tooling ecosystem that converts .tgo files into standard Go (.go) code.
 
-Example:
+It is designed to improve type clarity, readability, and developer ergonomics while remaining fully compatible with the Go toolchain.
 
-TypeGo:
-```go
-	package main
-	
-	import "fmt"
-	
-	enumstruct Role {
-		Admin
-		Guest
-		Member
-	}
-	
-	struct Person {
-		string Name
-		int Age
-		IntRole Role
-		
-		fn string Greet() {
-			return fmt.Sprintf("Hi, I'm %s, I'm %d years old, and my role is %s.", self.Name, self.Age, self.Role.ToString())
-		}
-	}
-		
-	fn main() {
-	
-		[]Person people = make(0) 
-	
-		people.append(Person{ Name: "Alice", Age: 30, Role: Role.Admin })
-		people.append(Person{ Name: "Bob", Age: 25, Role: Role.Member })
-		people.append(Person{ Name: "Charlie", Age: 40, Role: Role.Guest })
-	
-		for i := 0; i < len(people); i++ {
-			fmt.Println(people[i].Greet())
-		}
-	}
-```
+What this project demonstrates
 
-Converts to Go:
+TypeGo is a complete language and tooling project, built end-to-end:
 
-```go
+A custom programming language and syntax
+
+A full transpiler pipeline (.tgo → .go)
+
+Lexer, parser, and AST processing
+
+Code generation targeting Go
+
+A command-line interface
+
+A VSCode Language Server
+
+Self-hosting: TypeGo is written in TypeGo itself and transpiles its own source code
+
+This project was built to explore language design, compiler construction, and developer tooling in a practical, production-style setting.
+
+Example
+TypeGo input
 package main
 
 import "fmt"
 
+enumstruct Role {
+    Admin
+    Guest
+    Member
+}
+
+struct Person {
+    string Name
+    int Age
+    IntRole Role
+
+    fn string Greet() {
+        return fmt.Sprintf(
+            "Hi, I'm %s, I'm %d years old, and my role is %s.",
+            self.Name,
+            self.Age,
+            self.Role.ToString()
+        )
+    }
+}
+
+fn main() {
+
+    []Person people = make(0)
+
+    people.append(Person{ Name: "Alice", Age: 30, Role: Role.Admin })
+    people.append(Person{ Name: "Bob", Age: 25, Role: Role.Member })
+    people.append(Person{ Name: "Charlie", Age: 40, Role: Role.Guest })
+
+    for i := 0; i < len(people); i++ {
+        fmt.Println(people[i].Greet())
+    }
+}
+
+Generated Go output
+package main
+
+import "fmt"
 
 type IntRole int
+
 var Role = struct {
-	Admin IntRole
-	Guest IntRole
-	Member IntRole
+    Admin  IntRole
+    Guest  IntRole
+    Member IntRole
 }{
-	Admin: 0,
-	Guest: 1,
-	Member: 2,
+    Admin:  0,
+    Guest:  1,
+    Member: 2,
 }
 
 func (self IntRole) ToString() string {
-	switch self {
-	case Role.Admin:
-		return "Admin"
-	case Role.Guest:
-		return "Guest"
-	case Role.Member:
-		return "Member"
-	default:
-		return "Unknown"
-	}
+    switch self {
+    case Role.Admin:
+        return "Admin"
+    case Role.Guest:
+        return "Guest"
+    case Role.Member:
+        return "Member"
+    default:
+        return "Unknown"
+    }
 }
-
 
 type Person struct {
-	Name string
-	Age int
-	Role IntRole
+    Name string
+    Age  int
+    Role IntRole
 }
-
 
 func (self *Person) Greet() string {
-	return fmt.Sprintf("Hi, I'm %s, I'm %d years old, and my role is %s.", self.Name, self.Age, self.Role.ToString())
+    return fmt.Sprintf(
+        "Hi, I'm %s, I'm %d years old, and my role is %s.",
+        self.Name,
+        self.Age,
+        self.Role.ToString(),
+    )
 }
-
 
 func main() {
-	
-	var people []Person  = make([]Person, 0)
-	
-	
-	people = append(people, Person{Name:"Alice",Age:30,Role:Role.Admin})
-	people = append(people, Person{Name:"Bob",Age:25,Role:Role.Member})
-	people = append(people, Person{Name:"Charlie",Age:40,Role:Role.Guest})
-	
-	for i := 0; i < len(people); i++ {
-		fmt.Println(people[i].Greet())
-	}
-}
-```
 
-Questions and Answers:
+    var people []Person = make([]Person, 0)
 
-  
-**What is TypeGo?**
-  
+    people = append(people, Person{Name: "Alice", Age: 30, Role: Role.Admin})
+    people = append(people, Person{Name: "Bob", Age: 25, Role: Role.Member})
+    people = append(people, Person{Name: "Charlie", Age: 40, Role: Role.Guest})
 
-TypeGo is a transpiler that converts .tgo files into .go files.
-
-Features:
-
--No inferred types (except in limited cases)  
--C-style declaration syntax: type name = value  
--Improved enum syntax  
--Simplified struct methods  
-
-TypeGo is also completely written in TypeGo itself and converts every file to Go.
-  
-**Q. Why did you make TypeGo?**
-  
-
-Believe it or not, this actually started as a joke project and then became feasible the more I worked on it.  
-Go uses ':=' style inferred types all the time, so it may as well not even be a statically typed language, as it removes most of the benefits.  
-I joked about making 'TypeGo', to actually make it statically typed. Like Typescript and Javascript.  
-I also decided to fix other problems in the language too.  
-  
-From my experience in the language, I found Go has 3 main problems:  
-1. Inferred types 99% of the time and the language punishes specifying types or makes it impossible  
-2. Enums are terrible  
-3. Many things are unintuitive and verbose: append, struct methods, make.   
-  
-The goal was to try and fix these 3 things.  
-
-  
-**Q. How Do I use TypeGo?**
-  
-
-Simply install it on the path, so you can call it from the command prompt.  
-You then call it with the command: **tgo**
-
-There are four commands:
-
-	tgo help
- 	tgo version
-  	tgo convertfile file.tgo
-   	tgo convertdir
-	tgo convertfileabs file.tgo
-
-Basically you create a file with the extension .tgo in a new or existing Go project.  
-Write the code in that .tgo file and then run the command 'convertfile' with the file name or 'convertdir'.  
-Convert directory will find any .tgo files in this folder, and all subfolders, and create .go conversions of each file.  
-
-**Q. Will TypeGo cause conflicts in my project?**
-
-No. .tgo files will be completely ignored by the Go compiler which makes TypeGo completely modular.  
-You can write every file in a project in TypeGo or you can write one file in it. It's your choice.  
-
-Let's say you just want enums to be autogenerated? Just create a file with .tgo as the extension, write the enum and convert it to Go.  
-The rest of your project will be untouched.  
-
-
-**Q. Does TypeGo have a Language Server?**
-
-Yes, it's simply called TypeGo on VSCode. It has:  
--Syntax highlighting  
--Auto converts tgo -> go files on save  
-
-**Q. What's wrong with ':=' and inferred types?**
-
-
-You can't find any Go code that doesn't include ':=', anywhere, except if you read my Go code. It is basically everywhere and considered idiomatic.
-Just let the compiler work out the type. What could go wrong, right?
-This is literally the worst feature in Go and I would remove it entirely if I could. I'll explain why:
-
-**1. It makes code very hard to read**  
-Example:
-
-```go
-
-data := getData()
-fs := getFuncs()
-ch := extractChan(data)
-createGoRoutine(ch)
-
-```
-
-Good luck reading this without an IDE. Compare this to this version:
-
-```go
-
-var data []interface{} = getData()
-var fs []func() int = getFuncs()
-var ch chan map[int][]string = extractChan(data)
-createGoRoutine(ch)
-
-```
-
-Now you don't have to hold these var types in your head or use the crutch of an IDE just to be able to actually understand the code you write.
-
-If you think that ':=' doesn't make code harder to read, then try writing a whole Go project in notepad and then see how easy it is to read and write.
-You basically need to use an IDE to make anything readable at all.
-
-**2. It creates silent bugs**
-
-Let's say you make a mistake and forget to dereference a pointer:
-
-```go
-	func foo(index *int) {
-		...
-		index_before := index
-		...
-	}
-```
-
-You didn't want 'index_before' to be a pointer but guess what the compiler just inferred the type as.
-This is the main problem with inferred types. You are literally putting all your hopes in the compiler guessing what you want.
-You get minimal compile time checks when you code this way. No warning, no hint you made a mistake. The compiler just blasts ahead thinking you wanted a pointer.
-
-Compare this to:
-
-```go
-	func foo(index *int) {
-		...
-		var index_before int = index  //error
-		...
-	}
-```
-
-You now get a compiler error and it tells you that the type is incompatible.
-Summary:
-
-```go
-	index_before := index   	❌ - zero compile time checks, infers a pointer
-	var index_before = index 	❌ - zero compile time checks, infers a pointer
-	var index_before int = index	✅ - compiler actually catches the error
-	var index_before int = *index	✅ - compiler checks and finds no error
-
-```
-
-So the default and idiomatic style in Go makes code harder to read and introduces silent bugs? This is good how?  
-Yes, it's more concise to write ':=', but this comes at the cost of the compiler not actually checking your code and just guessing what you want.
-
-
-**Q. How does TypeGo change inferred types?**
-
-
-Firstly TypeGo reverses the order of declarations back to C style.
-
-TypeGo:
-```go
-	index := getIndex()  		❌ - not allowed
-	var index int = getIndex() 	❌ - not allowed
-	int index = getIndex() 		✅ - Correct
-
-converts to:
-
-	var index int = getIndex()
-```
-The converted Go code will never use ':=' with two exceptions. This is to actually have the compiler check your code, rather than guess what you are thinking.
-
-The exceptions are the situations where it is impossible or not needed.
-
-**Constants**
-```go
-	const PI = 3.14159
-```
-
-It's obvious this is a float, so you don't need to specify here. You can if you want though:
-
-```go
-	const float32 PI = 3.14159
-
-converts to:
-
-	const PI float32 = 3.14159
-```
-The other exceptions are in if statements and for loops. Why? Because Go doesn't allow you to use the long form in those.
-```go
-	for var i int = 0; i < 10; i++ { //error
-	for i := 0; i < 10; i++ { //Only way
-```
-So, as you literally can't specify the type in an if statement or for loop, Go and TypeGo use the same syntax here.
-In theory I could do this in the conversion to Go:
-```go
-!Hypothetical change!
-
-	TypeGo:
-	for int i = 0; i < 10; i++ {
-
-	Converted Go:
-	var i int
-	for i = 0; i < 10; i++ {
-```
-The problem with doing this is that 'i' is now not just local to the scope of the for loop and could cause conflicts. TypeGo doesn't track declared variables at all, 
-so for simplicity, for loops and if statements are unchanged.
-
-
-**Q. How does TypeGo improve enums?**
-
-
-Let's start with the problems of Enums.
-
-```go
-	type UserType int
-
-	const (
-		Regular = UserType iota
-		Guest
-		Admin
-	)
-```
-
-1. They have weird syntax
-2. They are global constants that conflict with other globals
-3. You can't print their names without manually creating string arrays or using 'stringer'
-4. There is no value checking and you can set any value
-
-TypeGo tries to address these issues by giving you two options.
-
-**1. enum**
-
-TypeGo:
-```go
-	enum UserType {
-		Regular
-		Guest
-		Admin
-	}
-
-```
-This will convert to:
-```go
-type UserType int
-
-const (
-	UserTypeRegular = 0
-	UserTypeGuest = 1
-	UserTypeAdmin = 2
-)
-
-func (self UserType) ToString() string {
-	switch self {
-	case UserTypeRegular:
-		return "Regular"
-	case UserTypeGuest:
-		return "Guest"
-	case UserTypeAdmin:
-		return "Admin"
-	default:
-		return "Unknown"
-	}
-}
-
-```
-
-The name of the enum will be placed before each name to avoid conflicts and a method called ToString will be auto generated.  
-This is the first option, to keep the iota way still possible.
-
-**2. enumstruct**
-
-The other option is 'enumstruct', taken as an idea from 'enumclass' in C++.
-
-```go
-	enumstruct UserType {
-		Regular
-		Guest
-		Admin
-	}
-```
-
-This will generate the following Go code:
-
-```go
-	type IntUserType int
-	var UserType = struct {
-		Regular IntUserType
-		Guest IntUserType
-		Admin IntUserType
-
-	}{
-		Regular: 0,
-		Guest: 1,
-		Admin: 2,
-	}
-
-	func (self IntUserType) ToString() string {
-		switch self {
-			case UserType.Regular:
-				return "Regular"
-			case UserType.Guest:
-				return "Guest"
-			case UserType.Admin:
-				return "Admin"
-			default:
-				return "Unknown"
-		}
-
-	}
-```
-
-You then access these values like so:
-
-```go
-
-	func main() {
-		IntUserType user_type = UserType.Regular
-		fmt.Println("user_type:", user_type.ToString());
-	}
-
-```
-
-So enumstructs will never conflict with any other global variable.
-
-By default enumstruct will generate an alias for you. Int+EnumName.
-If you want to specify the alias, use this:
-
-```go
-
-	enumstruct UserType : i_user_type {
-
-	}
-
-```
-
-Issue with enums that can't be fixed:
-**Incompatible values being set to enums**
-
-```go
-	IntUserType user_type = 99999999
-```
-
-There's nothing that can stop this, as the Go compiler doesn't bother checking these things and it's too complicated to make for me.
-
-But either way, this is a big quality of life improvement for enums.
-
-
-**Q. How does TypeGo Improve Structs and Methods?**
-
-
-The Go way to do it:
-
-```go
-
-	type Person struct {
-	        Age int
-	        Name string
-	}
-	
-	func (p *Person) Greet() {
-	        fmt.Println("My name is" , p.Name , "and I am " , p.Age , "years old");
-	}
-
-```
-
-The TypeGo way:
-
-```go
-
-    struct Person {
-        int Age
-        string Name
-        fn Greet() {
-            fmt.Println("My name is", self.Name, "and I am ", self.Age, "years old");
-        }
+    for i := 0; i < len(people); i++ {
+        fmt.Println(people[i].Greet())
     }
-
-```
-
-Methods now go inside of structs directly. The name of the object will be the 'self' for consistency.
-This will generate methods for you with a reference to the original object.
-
-You then declare structs like this:  
-
-```go
-	Person person = {
-		Age: 20,
-		Name: "john",
-	}
-```
-
-There's no need to write 'Person' twice as it will be inserted for you in the converted code:  
-
-Converted Go:
-```go
-        var person Person = Person{
-                Age: 20,
-                Name: "John",
-        }
-```
-
-You can also use methods in enum/enumstruct:
-
-```go
-
-enumstruct ConvertResult : IntConvertResult {
-    Ok,
-    Missing_Expected_Type,
-    Unexpected_Type,
-    Unexpected_End_Of_File,
-    No_Token_In_Node,
-    Null_Token,
-    Invalid_Node_Type,
-    Unsupported_Type,
-    Internal_Error,
-
-	fn bool IsError() {
-		return self != ConvertResult.Ok
-	}
-	fn Print() {
-		fmt.Printf("error: %s", self.ToString())
-	}
 }
 
-```
+Key features
+
+Explicit type declarations by default
+
+C-style declaration syntax (type name = value)
+
+Improved enum abstractions:
+
+enum
+
+enumstruct (scoped, non-conflicting enums)
+
+Struct methods defined inline
+
+Automatic generation of helper methods (e.g. ToString)
+
+Fully compatible with existing Go projects
+
+Incremental adoption: .tgo files are ignored by the Go compiler
+
+How it works
+
+.tgo files coexist with .go files in the same project
+
+TypeGo transpiles .tgo files into standard Go code
+
+Generated Go code is readable and does not require runtime dependencies
+
+Projects can adopt TypeGo partially or fully
+
+CLI usage
+
+TypeGo installs as a command-line tool:
+
+tgo help
+tgo version
+tgo convertfile file.tgo
+tgo convertfileabs file.tgo
+tgo convertdir
 
 
-**Q. Why revert back to C-style declarations?**
+convertfile converts a single file
 
+convertdir recursively converts all .tgo files in a directory
 
-C syntax definitely wasn't perfect and had some problems. For example:  
+Generated .go files integrate directly with the Go compiler
 
-```C
-	int *array[5];
-```
+Tooling
+VSCode Language Server
 
-Is this a pointer to an array of integers or an array of 5 pointers to integers?
-The syntax order made this completely unclear.  
+A VSCode extension named TypeGo is included, providing:
 
-The problem was not that you put the type first, but that type order made things unclear.  
-Go fixes this problem but also flips the order, for some reason.  
+Syntax highlighting
 
-I argue that it's unnecessary to flip the order to fix it and you can simply fix C's syntax by putting the types in order.  
-Example:
+Automatic .tgo → .go conversion on save
 
-```c
-	[5]*int array;
-```
+Design notes
 
-This is now crystal clear.  
--[5] - an array with 5 elements.  
--* int - of pointers to integers  
+TypeGo explores alternative approaches to type declarations, enums, and struct methods while remaining practical and interoperable with Go.
 
-This is basically how Go's syntax is, if you go back to: type name = value  
+A more detailed discussion of the design decisions and trade-offs can be found here:
 
-A comparison:
+➡ DESIGN.md
 
-```go
+(This includes deeper rationale behind explicit typing, enum design, and syntax choices.)
 
-	value := getValue() 		//short but harder to read and no type checking
-	var value int = getValue() 	//long but easier to read and has compile time checks
-	int value = getValue()		//not too long, easy to read and has compile time checks. The perfect middle ground
-```
+Status
 
+TypeGo is a complete and functional project, built as an exploration of language design, compiler construction, and developer tooling.
+
+License
+
+[Add license here]
