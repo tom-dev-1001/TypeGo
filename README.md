@@ -126,6 +126,7 @@ KEY FEATURES
 - Fully compatible with existing Go projects
 - Incremental adoption: .tgo files are ignored by the Go compiler
 
+---
 
 CLI USAGE
 
@@ -152,6 +153,7 @@ Recursively converts all .tgo files in a directory.
 
 Generated .go files integrate directly with the standard Go compiler.
 
+---
 
 TOOLING
 
@@ -162,6 +164,7 @@ TypeGo includes a VS Code extension that provides:
 - Automatic .tgo to .go conversion on save
 - Language Server support
 
+---
 
 DESIGN NOTES
 
@@ -174,8 +177,7 @@ The project focuses on:
 - Experimenting with alternative struct and method syntax
 - Maintaining strict compatibility with Go output
 
-More detailed design rationale can be found in DESIGN.md.
-
+---
 
 STATUS
 
