@@ -7,6 +7,110 @@ interoperable with the Go toolchain.
 TypeGo code lives in .tgo files and is compiled into standard .go files,
 allowing incremental adoption in existing Go projects.
 
+Example:
+
+Type input:
+```go
+package main
+
+import "fmt"
+
+enumstruct Role {
+    Admin
+    Guest
+    Member
+}
+
+struct Person {
+    string Name
+    int Age
+    IntRole Role
+
+    fn string Greet() {
+        return fmt.Sprintf(
+            "Hi, I'm %s, I'm %d years old, and my role is %s.",
+            self.Name,
+            self.Age,
+            self.Role.ToString()
+        )
+    }
+}
+
+fn main() {
+
+    []Person people = make(0)
+
+    people.append(Person{ Name: "Alice", Age: 30, Role: Role.Admin })
+    people.append(Person{ Name: "Bob", Age: 25, Role: Role.Member })
+    people.append(Person{ Name: "Charlie", Age: 40, Role: Role.Guest })
+
+    for i := 0; i < len(people); i++ {
+        fmt.Println(people[i].Greet())
+    }
+}
+```
+
+Generated Go output:
+```go
+package main
+
+import "fmt"
+
+type IntRole int
+
+var Role = struct {
+    Admin  IntRole
+    Guest  IntRole
+    Member IntRole
+}{
+    Admin:  0,
+    Guest:  1,
+    Member: 2,
+}
+
+func (self IntRole) ToString() string {
+    switch self {
+    case Role.Admin:
+        return "Admin"
+    case Role.Guest:
+        return "Guest"
+    case Role.Member:
+        return "Member"
+    default:
+        return "Unknown"
+    }
+}
+
+type Person struct {
+    Name string
+    Age  int
+    Role IntRole
+}
+
+func (self *Person) Greet() string {
+    return fmt.Sprintf(
+        "Hi, I'm %s, I'm %d years old, and my role is %s.",
+        self.Name,
+        self.Age,
+        self.Role.ToString(),
+    )
+}
+
+func main() {
+
+    var people []Person = make([]Person, 0)
+
+    people = append(people, Person{Name: "Alice", Age: 30, Role: Role.Admin})
+    people = append(people, Person{Name: "Bob", Age: 25, Role: Role.Member})
+    people = append(people, Person{Name: "Charlie", Age: 40, Role: Role.Guest})
+
+    for i := 0; i < len(people); i++ {
+        fmt.Println(people[i].Greet())
+    }
+}
+
+```
+
 
 KEY FEATURES
 
