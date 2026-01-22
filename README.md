@@ -113,7 +113,6 @@ func main() {
 
 ```
 
-
 KEY FEATURES
 
 - Explicit type declarations by default
@@ -133,23 +132,18 @@ CLI USAGE
 TypeGo installs as a command-line tool named "tgo".
 
 Commands:
-
+```
 tgo help
 tgo version
 tgo convertfile file.tgo
 tgo convertfileabs file.tgo
 tgo convertdir
-
+```
 Command descriptions:
 
-convertfile
-Converts a single .tgo file into a .go file.
-
-convertfileabs
-Converts a single .tgo file using an absolute path.
-
-convertdir
-Recursively converts all .tgo files in a directory.
+convertfile - Converts a single .tgo file into a .go file.
+convertfileabs - Converts a single .tgo file using an absolute path.
+convertdir - Recursively converts all .tgo files in a directory.
 
 Generated .go files integrate directly with the standard Go compiler.
 
