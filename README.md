@@ -1,5 +1,7 @@
 TypeGo
 
+***
+
 TypeGo is an experimental extension to Go that explores alternative approaches
 to type declarations, enums, and struct methods while remaining fully
 interoperable with the Go toolchain.
