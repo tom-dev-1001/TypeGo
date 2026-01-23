@@ -11,7 +11,7 @@ allowing incremental adoption in existing Go projects.
 
 Example:
 
-Type input:
+TypeGo input:
 ```go
 package main
 
